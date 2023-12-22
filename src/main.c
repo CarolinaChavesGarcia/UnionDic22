@@ -64,7 +64,8 @@
 /*
  * modification history (new versions first)
  * -----------------------------------------------------------
- * yyyymmdd v0.0.1 initials initial version
+ * 20231212 v0.0.1 initials initial version
+ * 20231222 v0.0.2 initials initial version
  */
 
 /*==================[inclusions]=============================================*/
