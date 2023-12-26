@@ -65,7 +65,7 @@
  * modification history (new versions first)
  * -----------------------------------------------------------
  * 20231212 v0.0.1 initials initial version
- * 20231222 v0.0.2 initials initial version
+ * 20231226 v0.0.2 initials initial version
  */
 
 /*==================[inclusions]=============================================*/
@@ -161,11 +161,12 @@ void clear_array(void) {
 void floatToASCIIAndSend(float value) {
     int32_t intValue = (int32_t)value; // Integer part
     float decimalPart = value - intValue; // Decimal part
-    char asciiRepresentation[11]; // Max 10 digits + null
+
 
     // Convert integer part to ASCII
     int32_t absIntValue = abs(intValue);
     int index = 0;
+    char asciiRepresentation[sizeof(absIntValue)]; // Max 10 digits + null
 
     if (absIntValue == 0) {
         // Special case value 0
@@ -186,7 +187,7 @@ void floatToASCIIAndSend(float value) {
             asciiRepresentation[index - i - 1] = temp;
             for (int i = 0; i < index; ++i) {
             	Chip_UART_SendByte(USB_UART, asciiRepresentation[i]);
-                DelayMs(100);
+                DelayMs(10);
             }
     	}
     }
@@ -195,10 +196,10 @@ void floatToASCIIAndSend(float value) {
     Chip_UART_SendByte(USB_UART, 0x2E);
 
     //Convert decimal part to ASCII
-    for (int i = 0; i < sizeof(decimalPart); ++i) {
+    for (int i = 0; i < 2; ++i) {
         decimalPart *= 10;
         Chip_UART_SendByte(USB_UART, 0x30 + (int)decimalPart);
-        DelayMs(100);
+        DelayMs(10);
         decimalPart -= (int)decimalPart;
     }
     Chip_UART_SendByte(USB_UART, 0x0A);
@@ -286,6 +287,9 @@ int main(void)
 	uint16_t angle;		//Angle
 	uint32_t time; 		//for use to measure the elapsed time
 
+	//float TestValue = 15.348;
+
+	DelaySec(3);			//DelayMs(100);
 	while (TRUE)
 	{
 
@@ -330,8 +334,12 @@ int main(void)
 		if (flag_serial_data_print) {
 			Chip_UART_SendBlocking(USB_UART, &("PI = "),sizeof("PI = "));
 			floatToASCIIAndSend((RX_data)->force_node);
+			DelayMs(10);
 			Chip_UART_SendBlocking(USB_UART, &("PD = "),sizeof("PD = "));
 			floatToASCIIAndSend((RX_data + 1)->force_node);
+			DelayMs(10);
+			//floatToASCIIAndSend(TestValue);
+			//DelayMs(100);
 			clear_array();
 			flag_serial_data_print = FALSE;		//Clear the flag
 		}
@@ -342,6 +350,7 @@ int main(void)
 		time = DWTStop();
 		Chip_UART_SendBlocking(USB_UART, &("Angle = "),sizeof("Angle = "));
 		uint16ToASCII(angle);				//Convert  uint16_t a ASCII
+		DelayMs(10);
 	};
 
 	// YOU NEVER REACH HERE, because this program runs directly or on a
